@@ -15,13 +15,13 @@ const keystone = new Keystone({
   onConnect: async keystone => {
     await keystone.createItems({
       User: [
-        { name: 'John Duck', email: 'john@duck.com', password: 'dolphins' },
-        { name: 'Barry', email: 'bartduisters@bartduisters.com', password: 'dolphins' },
+        { name: 'Tweetz team', email: 'team@tweetz.com', password: 'dolphins' },
       ],
-      Post: [
+      Tweet: [
         {
-          title: 'Hello World',
-          author: { where: { name: 'John Duck' } },
+          content: 'Hello, Welcome to tweetz',
+          author: { where: { name: 'Tweetz team' } },
+          dateCreated: Date.now()
         },
       ],
     });
@@ -41,7 +41,7 @@ keystone.createList('Tweet', {
   schemaDoc: 'All tweets',
   fields: {
     content: { type: Text, schemaDoc: 'This is the content of the tweet' },
-    dateCreated: { type: CalendarDay, schemaDoc: 'This is the time when post is created' },
+    dateCreated: { type: Text, schemaDoc: 'This is the time when post is created' },
     author: { type: Relationship, ref: 'User' },
   },
 });
@@ -52,7 +52,6 @@ keystone.createList('Todo', {
     name: { type: Text, schemaDoc: 'This is the thing you need to do' },
   },
 });
-
 module.exports = {
   keystone,
   apps: [
