@@ -49,6 +49,13 @@ keystone.createList('Todo', {
   fields: {
     name: { type: Text, schemaDoc: 'This is the thing you need to do' },
   },
+  access: {
+    create: true,
+    read: true,
+    update: false,
+    delete: false,
+    auth: true,
+  },
 });
 
 //----------------------------- Auth ---------------------------//
