@@ -3,29 +3,22 @@ const { Text, CalendarDay, Relationship, Password } = require('@keystonejs/field
 const { GraphQLApp } = require('@keystonejs/app-graphql');
 const { AdminUIApp } = require('@keystonejs/app-admin-ui');
 const { StaticApp } = require('@keystonejs/app-static');
+const { PasswordAuthStrategy } = require('@keystonejs/auth-password');
 
 const { MongooseAdapter: Adapter } = require('@keystonejs/adapter-mongoose');
 
 const PROJECT_NAME = "tweetz";
 
-
 const keystone = new Keystone({
   name: PROJECT_NAME,
   adapter: new Adapter(),
-  // onConnect: async keystone => {
-  //   await keystone.createItems({
-  //     User: [
-  //       { name: 'Tweetz team', email: 'team@tweetz.com', password: 'dolphins' },
-  //     ],
-  //     Tweet: [
-  //       {
-  //         content: 'Hello, Welcome to tweetz',
-  //         author: { where: { name: 'Tweetz team' } },
-  //         dateCreated: Date.now()
-  //       },
-  //     ],
-  //   });
-  // },
+  onConnect: async keystone => {
+    await keystone.createItems({
+      User: [
+        { name: 'admin', email: 'admin@admin.com', password: 'admin@admin.com' },
+      ],
+    });
+  },
 });
 
 keystone.createList('User', {
@@ -57,11 +50,42 @@ keystone.createList('Todo', {
     name: { type: Text, schemaDoc: 'This is the thing you need to do' },
   },
 });
+
+//----------------------------- Auth ---------------------------//
+
+const authStrategy = keystone.createAuthStrategy({
+  type: PasswordAuthStrategy,
+  list: 'User',
+  config: {
+    identityField: 'email',
+    secretField: 'password',
+  },
+});
+
+// app.post('/admin/signin', async (req, res) => {
+//   const username = req.body.username;
+//   const password = req.body.password;
+
+//   const result = await this.authStrategy.validate({
+//     username,
+//     password,
+//   });
+
+//   if (result.success) {
+//     // Create session and redirect
+//   }
+
+//   // Return the failure
+//   return res.json({ success: false, message: result.message });
+// });
+
+
 module.exports = {
   keystone,
   apps: [
     new GraphQLApp(),
     new StaticApp({ path: '/', src: 'public' }),
-    new AdminUIApp({ enableDefaultRoute: true }),
+    new AdminUIApp({ enableDefaultRoute: true, authStrategy }),
+    // new AdminUIApp({ enableDefaultRoute: true }),
   ],
 };
