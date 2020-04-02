@@ -23,6 +23,7 @@ const keystone = new Keystone({
 
 keystone.createList('User', {
   schemaDoc: 'A list of the users',
+  access: ({ authentication: { item } }) => !!item,
   fields: {
     name: { type: Text, schemaDoc: 'This is the name of the user', isRequired: true },
     email: { type: Text, schemaDoc: 'This is the email id of the user', isRequired: true },
@@ -37,6 +38,7 @@ keystone.createList('User', {
 
 keystone.createList('Tweet', {
   schemaDoc: 'All tweets',
+  access: ({ authentication: { item } }) => !!item,
   fields: {
     content: { type: Text, schemaDoc: 'This is the content of the tweet', isRequired: true },
     dateCreated: { type: Text, schemaDoc: 'This is the time when post is created', isRequired: true },
@@ -46,15 +48,9 @@ keystone.createList('Tweet', {
 
 keystone.createList('Todo', {
   schemaDoc: 'A list of things which need to be done',
+  access: ({ authentication: { item } }) => !!item,
   fields: {
     name: { type: Text, schemaDoc: 'This is the thing you need to do' },
-  },
-  access: {
-    create: true,
-    read: true,
-    update: false,
-    delete: false,
-    auth: true,
   },
 });
 
@@ -90,7 +86,7 @@ const authStrategy = keystone.createAuthStrategy({
 module.exports = {
   keystone,
   apps: [
-    new GraphQLApp(),
+    new GraphQLApp({ authStrategy }),
     new StaticApp({ path: '/', src: 'public' }),
     new AdminUIApp({ enableDefaultRoute: true, authStrategy }),
     // new AdminUIApp({ enableDefaultRoute: true }),
